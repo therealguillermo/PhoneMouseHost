@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<!-- Specify Windows as the target OS -->
+		<UseWindowsForms>true</UseWindowsForms>
+		<!-- Enable Windows Forms support -->
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Include any required packages -->
+		<!--PackageReference Include="Microsoft.AspNetCore.SignalR" Version="7.0.4" /> -->
+		<!--PackageReference Include="WindowsInput" Version="7.0.4" /> -->
+		<!-- Optional for advanced input simulation -->
+	</ItemGroup>
+
+</Project>
