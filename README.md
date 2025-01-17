@@ -9,7 +9,7 @@
 
 ## Prerequisites
 - A Windows PC with **.NET 6.0** runtime installed.
-- An iOS device with the **PhoneMouseClient** app installed.
+- An iOS device with the **[PhoneMouseClient](https://github.com/therealguillermo/PhoneMouseClient-iOS)** app installed.
 - Both devices connected to the same local network.
 
 ## Installation and Execution
