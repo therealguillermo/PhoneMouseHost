@@ -17,7 +17,7 @@
 ### Option 1:
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/PhoneMouseHost.git
+   git clone git@github.com:therealguillermo/PhoneMouseHost.git
    cd PhoneMouseHost
 2. Build and run with .NET 6.0+
    ```bash
