@@ -13,6 +13,7 @@ namespace PhoneMouseTrayApp
 {
     class Program
     {
+
         // Import necessary Windows API functions to manipulate the console window
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr GetConsoleWindow();
@@ -35,8 +36,10 @@ namespace PhoneMouseTrayApp
         [STAThread] // Marking the Main method for STAThread (required for NotifyIcon)
         static void Main(string[] args)
         {
+
+            bool showConsole = true;
             // Hide the console window if running as a Windows application
-            if (Environment.UserInteractive) // Checks if running interactively (console mode)
+            if (Environment.UserInteractive && !showConsole) // Checks if running interactively (console mode)
             {
                 // Set the console window to invisible
                 var handle = GetConsoleWindow();
