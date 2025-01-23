@@ -34,7 +34,22 @@ namespace PhoneMouse
 #if !WINDOWS
         private void MoveMousePointer(int deltaX, int deltaY)
         {
-            Console.WriteLine($"Move Mouse Pointer");
+            var currentPos = this._mouseController.GetSavedMouseState();
+            //Console.WriteLine($"currentPos (should not change b4 state end) : {currentPos.X} {currentPos.Y}");
+            InputHelper.SetCursorPosition((double)(currentPos.X + deltaX), (double)(currentPos.Y + deltaY));
+        }
+
+        private void SimulateKeyDown(InputHelper.MacVirtualKeyCodes key)
+        {
+            InputHelper.PressKey(key);
+            Console.WriteLine($"key Pressed {key}");
+        }
+
+        // Method to simulate key release (key up)
+        private void SimulateKeyUp(InputHelper.MacVirtualKeyCodes key)
+        {
+            InputHelper.ReleaseKey(key);
+            Console.WriteLine($"key Released {key}");
         }
 #endif
 
@@ -72,7 +87,7 @@ namespace PhoneMouse
         }
         public async Task MoveMouse(double deltaX, double deltaY)
         {
-            Console.WriteLine($"Move mouse: DeltaX={deltaX}, DeltaY={deltaY}");
+            //Console.WriteLine($"Move mouse: DeltaX={deltaX}, DeltaY={deltaY}");
 
             // Simulate mouse movement (in a simplified way)
             int deltaXInt = (int)deltaX;

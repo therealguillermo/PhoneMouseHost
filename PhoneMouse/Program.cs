@@ -97,7 +97,10 @@ namespace PhoneMouseTrayApp
 #if !WINDOWS
             // Run the web server (ASP.NET Core)
             Console.WriteLine($"starting server on {NetworkHelper.GetLocalIPAddress()}");
-            RunWebServer(args);
+            
+            var serverTask = Task.Run(() => RunWebServer(args));
+            serverTask.Wait();
+
             Console.WriteLine($"end");
             // Run the tray application (Windows Forms)
 #endif

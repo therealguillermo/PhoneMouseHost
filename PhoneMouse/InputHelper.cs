@@ -402,14 +402,161 @@ namespace PhoneMouse
 
 #if !WINDOWS
 
-        public const int _ShiftKey = 0;
+        [StructLayout(LayoutKind.Sequential)]
+        public struct CGPoint
+        {
+            public double X;
+            public double Y;
+
+            public CGPoint(double x, double y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
+
+        [DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+        private static extern IntPtr CGEventCreateMouseEvent(IntPtr eventSource, int type, CGPoint point, int mouseEvent);
+
+        [DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+        private static extern void CGEventSetType(IntPtr eventSource, int type);
+
+        [DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+        private static extern IntPtr CGEventCreateScrollWheelEvent(int axis, int scrollType, int wheelCount, int delta);
+
+        [DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+        private static extern void CGEventSetIntegerValueField(IntPtr eventSource, int field, int value);
+
+        [DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+        public static extern IntPtr CGEventCreateKeyboardEvent(IntPtr eventSource, uint virtualKey, bool keyDown);
+
+        [DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+        private static extern void CGEventPost(IntPtr eventSource, IntPtr eventTarget);
+
+        [DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+        public static extern void CFRelease(IntPtr cf);
+
+
+        const int kCGEventMouseMoved = 1;
+        const int kCGEventLeftMouseDown = 10;
+        const int kCGEventLeftMouseUp = 11;
+
+        public enum MacVirtualKeyCodes
+        {
+            A = 0x00,
+            S = 0x01,
+            D = 0x02,
+            F = 0x03,
+            H = 0x04,
+            G = 0x05,
+            Z = 0x06,
+            X = 0x07,
+            C = 0x08,
+            V = 0x09,
+            B = 0x0B,
+            Q = 0x0C,
+            W = 0x0D,
+            E = 0x0E,
+            R = 0x0F,
+            Y = 0x10,
+            T = 0x11,
+            I = 0x12,
+            J = 0x13,
+            K = 0x14,
+            L = 0x15,
+            M = 0x16,
+            N = 0x17,
+            O = 0x18,
+            P = 0x19,
+            U = 0x1A,
+            Shift = 0x38
+        }
+
+
+
+        public enum CGEventType
+        {
+            MouseMoved = 5,
+            LeftMouseDown = 1,
+            LeftMouseUp = 2,
+            RightMouseDown = 3,
+            RightMouseUp = 4
+        }
+
+        public enum CGMouseButton
+        {
+            Left = 0,
+            Right = 1,
+            Center = 2
+        }
+
+        public enum CGEventTapLocation
+        {
+            HID = 0,
+            Session = 1,
+            AnnotatedSession = 2
+        }
+        public const MacVirtualKeyCodes _ShiftKey = MacVirtualKeyCodes.Shift;
 
         public static void GetCursorPosition() {}
-        public static void SetCursorPosition(int x, int y) {}
-        public static int GetKeysKey(string key) { return 0; }
+
+        public static void SetCursorPosition(double x, double y)
+        {
+            CGPoint newPosition = new CGPoint(x, y);
+            IntPtr mouseEvent = CGEventCreateMouseEvent(IntPtr.Zero, (int)CGEventType.MouseMoved, newPosition,(int)CGMouseButton.Left);
+            CGEventPost((nint)CGEventTapLocation.HID, mouseEvent);
+        }
+
+        public static MacVirtualKeyCodes GetKeysKey(string key)
+        {
+            switch (key)
+            {
+                case "A": return MacVirtualKeyCodes.A;
+                case "S": return MacVirtualKeyCodes.S;
+                case "D": return MacVirtualKeyCodes.D;
+                case "F": return MacVirtualKeyCodes.F;
+                case "H": return MacVirtualKeyCodes.H;
+                case "G": return MacVirtualKeyCodes.G;
+                case "Z": return MacVirtualKeyCodes.Z;
+                case "X": return MacVirtualKeyCodes.X;
+                case "C": return MacVirtualKeyCodes.C;
+                case "V": return MacVirtualKeyCodes.V;
+                case "B": return MacVirtualKeyCodes.B;
+                case "Q": return MacVirtualKeyCodes.Q;
+                case "W": return MacVirtualKeyCodes.W;
+                case "E": return MacVirtualKeyCodes.E;
+                case "R": return MacVirtualKeyCodes.R;
+                case "Y": return MacVirtualKeyCodes.Y;
+                case "T": return MacVirtualKeyCodes.T;
+                case "I": return MacVirtualKeyCodes.I;
+                case "J": return MacVirtualKeyCodes.J;
+                case "K": return MacVirtualKeyCodes.K;
+                case "L": return MacVirtualKeyCodes.L;
+                case "M": return MacVirtualKeyCodes.M;
+                case "N": return MacVirtualKeyCodes.N;
+                case "O": return MacVirtualKeyCodes.O;
+                case "P": return MacVirtualKeyCodes.P;
+                case "U": return MacVirtualKeyCodes.U;
+                
+                // Add any other keys as needed
+
+                default: throw new ArgumentException($"Key '{key}' is not recognized.");
+            }
+        }
         public static void PressMouseKey(int mButton) {}
-        public static void PressKey(object key) {}
-        public static void ReleaseKey(object key) {}
+        
+        public static void PressKey(MacVirtualKeyCodes key)
+        {
+            IntPtr keyDown = CGEventCreateKeyboardEvent(IntPtr.Zero, (ushort)key, true);
+            CGEventPost((nint)CGEventTapLocation.HID, keyDown);
+        }
+
+        public static void ReleaseKey(MacVirtualKeyCodes key)
+        {
+            IntPtr keyUp = CGEventCreateKeyboardEvent(IntPtr.Zero, (ushort)key, false);
+            CGEventPost((nint)CGEventTapLocation.HID, keyUp);
+        }
+
         public static int GetMouseButton(string mButton, bool down) 
         {
             if (mButton == "M1" && !down) 
