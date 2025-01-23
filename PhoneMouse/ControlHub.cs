@@ -6,6 +6,24 @@ namespace PhoneMouse
 {
     public class ControlHub : Hub
     {
+#if WINDOWS
+        // Moves the cursor to position based off of initial mousepos start
+        private void MoveMousePointer(int deltaX, int deltaY)
+        {
+            //var currentPos = Cursor.Position;
+            var currentPos = this._mouseController.GetSavedMouseState();
+            Console.WriteLine($"currentPos (should not change b4 state end) : {currentPos}");
+            Cursor.Position = new Point(currentPos.X + deltaX, currentPos.Y + deltaY);
+        }
+#endif
+
+#if !WINDOWS
+        private void MoveMousePointer(int deltaX, int deltaY)
+        {
+            Console.WriteLine($"Move Mouse Pointer");
+        }
+#endif
+
         private readonly MouseController _mouseController;
 
         public ControlHub(MouseController mouseController)
@@ -50,15 +68,6 @@ namespace PhoneMouse
             await Clients.Caller.SendAsync("MouseMoved", $"Mouse moved by ({deltaX}, {deltaY}).");
         }
 
-        // Moves the cursor to position based off of initial mousepos start
-        private void MoveMousePointer(int deltaX, int deltaY)
-        {
-            //var currentPos = Cursor.Position;
-            var currentPos = this._mouseController.GetSavedMouseState();
-            Console.WriteLine($"currentPos (should not change b4 state end) : {currentPos}");
-            Cursor.Position = new Point(currentPos.X + deltaX, currentPos.Y + deltaY);
-        }
-
         // Called when cursor drag is finished
         public async Task MouseMoveFinished() 
         {
@@ -69,62 +78,46 @@ namespace PhoneMouse
 
         public async Task MouseClick(string mButton)
         {
-            if (mButton == "M1")
-            {
-                // Simulate left mouse button press (LeftDown)
-                InputHelper.PressMouseKey(MouseEventF.LeftDown);
-                InputHelper.PressMouseKey(MouseEventF.LeftUp);
-            }
-            else if (mButton == "M2")
-            {
-                // Simulate right mouse button press (RightDown) 
-                InputHelper.PressMouseKey(MouseEventF.RightDown);
-                InputHelper.PressMouseKey(MouseEventF.RightUp);
-            }
-            else
+            if (mButton != "M1" && mButton != "M2")
             {
                 throw new ArgumentException("Invalid mouse button. Use 'M1' for Left or 'M2' for Right.");
             }
 
-            await Clients.Caller.SendAsync("CommandReceived", $"MBTN Clicked.");
+            var btnKeyCodePress = InputHelper.GetMouseButton(mButton, true);
+            var btnKeyCodeRelease = InputHelper.GetMouseButton(mButton, false);
+            
+            InputHelper.PressMouseKey(btnKeyCodePress);
+            InputHelper.PressMouseKey(btnKeyCodeRelease);
+
+            await Clients.Caller.SendAsync("CommandReceived", $"MBTN Released.");
         }
 
         public async Task MousePress(string mButton)
         {
-            if (mButton == "M1")
-            {
-                // Simulate left mouse button press (LeftDown)
-                InputHelper.PressMouseKey(MouseEventF.LeftDown);
-            }
-            else if (mButton == "M2")
-            {
-                // Simulate right mouse button press (RightDown)
-                InputHelper.PressMouseKey(MouseEventF.RightDown);
-            }
-            else
+            if (mButton != "M1" && mButton != "M2")
             {
                 throw new ArgumentException("Invalid mouse button. Use 'M1' for Left or 'M2' for Right.");
             }
+
+            bool press = true;
+            var btnKeyCode = InputHelper.GetMouseButton(mButton, press);
+            InputHelper.PressMouseKey(btnKeyCode);
+
+            await Clients.Caller.SendAsync("CommandReceived", $"MBTN Released.");
 
             await Clients.Caller.SendAsync("CommandReceived", $"MBTN Pressed.");
         }
 
         public async Task MouseRelease(string mButton)
         {
-            if (mButton == "M1")
-            {
-                // Simulate left mouse button release (LeftUp)
-                InputHelper.PressMouseKey(MouseEventF.LeftUp);
-            }
-            else if (mButton == "M2")
-            {
-                // Simulate right mouse button release (RightUp)
-                InputHelper.PressMouseKey(MouseEventF.RightUp);
-            }
-            else
+            if (mButton != "M1" && mButton != "M2")
             {
                 throw new ArgumentException("Invalid mouse button. Use 'M1' for Left or 'M2' for Right.");
             }
+
+            bool press = false;
+            var btnKeyCode = InputHelper.GetMouseButton(mButton, press);
+            InputHelper.PressMouseKey(btnKeyCode);
 
             await Clients.Caller.SendAsync("CommandReceived", $"MBTN Released.");
         }
@@ -161,7 +154,7 @@ namespace PhoneMouse
             if (isUppercase)
             {
                 // Simulate pressing Shift key if the character is uppercase
-                this.SimulateKeyDown(Keys.ShiftKey);
+                this.SimulateKeyDown(InputHelper._ShiftKey);
             }
 
             this.SimulateKeyDown(keyCode);
@@ -169,7 +162,7 @@ namespace PhoneMouse
                         if (isUppercase)
             {
                 // Simulate pressing Shift key if the character is uppercase
-                this.SimulateKeyUp(Keys.ShiftKey);
+                this.SimulateKeyUp(InputHelper._ShiftKey);
             }
             Console.WriteLine($"Keypressed {key}");
             await Clients.Caller.SendAsync("CommandReceived", $"Key send recieved");
@@ -197,14 +190,14 @@ namespace PhoneMouse
         }
 
         // Method to simulate key press (key down)
-        private void SimulateKeyDown(Keys key)
+        private void SimulateKeyDown(object key)
         {
             InputHelper.PressKey(key);
             Console.WriteLine($"key Pressed {key}");
         }
 
         // Method to simulate key release (key up)
-        private void SimulateKeyUp(Keys key)
+        private void SimulateKeyUp(object key)
         {
             InputHelper.ReleaseKey(key);
             Console.WriteLine($"key Released {key}");

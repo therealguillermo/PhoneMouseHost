@@ -1,7 +1,10 @@
 
+#if WINDOWS
+using System.Windows.Forms;
+#endif
+
 using System;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +17,7 @@ namespace PhoneMouseTrayApp
     class Program
     {
 
+#if WINDOWS
         // Import necessary Windows API functions to manipulate the console window
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr GetConsoleWindow();
@@ -31,29 +35,7 @@ namespace PhoneMouseTrayApp
         [DllImport("kernel32.dll")]
         public static extern bool FreeConsole();
 
-
-
-        [STAThread] // Marking the Main method for STAThread (required for NotifyIcon)
-        static void Main(string[] args)
-        {
-
-            bool showConsole = true;
-            // Hide the console window if running as a Windows application
-            if (Environment.UserInteractive && !showConsole) // Checks if running interactively (console mode)
-            {
-                // Set the console window to invisible
-                var handle = GetConsoleWindow();
-                ShowWindow(handle, SW_HIDE);
-                FreeConsole();
-            }
-            // Run the web server (ASP.NET Core)
-            Task.Run(() => RunWebServer(args));
-
-            // Run the tray application (Windows Forms)
-            RunTrayApplication();
-        }
-
-        private static void RunTrayApplication()
+                private static void RunTrayApplication()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -88,6 +70,37 @@ namespace PhoneMouseTrayApp
             trayIcon.Visible = false;
             trayIcon.Dispose();
             Application.Exit();
+        }
+
+
+
+        [STAThread] // Marking the Main method for STAThread (required for NotifyIcon)
+#endif
+        static void Main(string[] args)
+        {
+
+            bool showConsole = true;
+#if WINDOWS
+            // Hide the console window if running as a Windows application
+            if (Environment.UserInteractive && !showConsole) // Checks if running interactively (console mode)
+            {
+                // Set the console window to invisible
+                var handle = GetConsoleWindow();
+                ShowWindow(handle, SW_HIDE);
+                FreeConsole();
+            }
+
+            Task.Run(() => RunWebServer(args));
+            RunTrayApplication();
+#endif
+
+#if !WINDOWS
+            // Run the web server (ASP.NET Core)
+            Console.WriteLine($"starting server on {NetworkHelper.GetLocalIPAddress()}");
+            RunWebServer(args);
+            Console.WriteLine($"end");
+            // Run the tray application (Windows Forms)
+#endif
         }
 
         private static void RunWebServer(string[] args)

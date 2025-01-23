@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace PhoneMouse
 {
     public class InputHelper
@@ -142,7 +143,10 @@ namespace PhoneMouse
 
         [DllImport("User32.dll")]
         private static extern bool SetCursorPos(int x, int y);
+
+        public const Keys _ShiftKey = Keys.ShiftKey;
         #endregion
+
 
         #region Wrapper Methods
         public static POINT GetCursorPosition()
@@ -369,22 +373,62 @@ namespace PhoneMouse
             InputHelper.PressMouseKey(InputHelper.MouseEventF.RightUp);
         }
 
+        public static MouseEventF GetMouseButton(string mButton, bool down) 
+        {
+            if (mButton == "M1" && !down) 
+            {
+                return MouseEventF.LeftUp
+            }
+            if (mButton == "M1" && down) 
+            {
+                return MouseEventF.LeftDown
+            }
+            if (mButton == "M2" && !down) 
+            {
+                return MouseEventF.RightUp
+            }
+            if (mButton == "M2" && down) 
+            {
+                return MouseEventF.RightUp
+            }
+        }
+
         #endregion
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern short GetAsyncKeyState(int vKey);
 #endif
 
-#if OSX
-        using System.Runtime.InteropServices;
+#if !WINDOWS
 
-        public static void GetCursorPosition()
-        public static void SetCursorPosition(int x, int y)
-        public static void GetKeysKey(string key)
-        public static void PressMouseKey(key=RightDown)
-        public static void PressKey(keyCode key)
-        public static void ReleaseKey(keyCode key)
+        public const int _ShiftKey = 0;
 
+        public static void GetCursorPosition() {}
+        public static void SetCursorPosition(int x, int y) {}
+        public static int GetKeysKey(string key) { return 0; }
+        public static void PressMouseKey(int mButton) {}
+        public static void PressKey(object key) {}
+        public static void ReleaseKey(object key) {}
+        public static int GetMouseButton(string mButton, bool down) 
+        {
+            if (mButton == "M1" && !down) 
+            {
+                return 0;
+            }
+            if (mButton == "M1" && down) 
+            {
+                return 0;  
+            }
+            if (mButton == "M2" && !down) 
+            {
+                return 0;
+            }
+            if (mButton == "M2" && down) 
+            {
+                return 0;
+            }
+            return 1;
+        }
 #endif
     }
 }
