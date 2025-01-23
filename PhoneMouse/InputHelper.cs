@@ -377,20 +377,21 @@ namespace PhoneMouse
         {
             if (mButton == "M1" && !down) 
             {
-                return MouseEventF.LeftUp
+                return MouseEventF.LeftUp;
             }
             if (mButton == "M1" && down) 
             {
-                return MouseEventF.LeftDown
+                return MouseEventF.LeftDown;
             }
             if (mButton == "M2" && !down) 
             {
-                return MouseEventF.RightUp
+                return MouseEventF.RightUp;
             }
             if (mButton == "M2" && down) 
             {
-                return MouseEventF.RightUp
+                return MouseEventF.RightUp;
             }
+            return MouseEventF.LeftUp;
         }
 
         #endregion

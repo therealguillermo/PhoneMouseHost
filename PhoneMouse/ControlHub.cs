@@ -15,6 +15,20 @@ namespace PhoneMouse
             Console.WriteLine($"currentPos (should not change b4 state end) : {currentPos}");
             Cursor.Position = new Point(currentPos.X + deltaX, currentPos.Y + deltaY);
         }
+
+        // Method to simulate key press (key down)
+        private void SimulateKeyDown(Keys key)
+        {
+            InputHelper.PressKey(key);
+            Console.WriteLine($"key Pressed {key}");
+        }
+
+        // Method to simulate key release (key up)
+        private void SimulateKeyUp(Keys key)
+        {
+            InputHelper.ReleaseKey(key);
+            Console.WriteLine($"key Released {key}");
+        }
 #endif
 
 #if !WINDOWS
@@ -103,8 +117,6 @@ namespace PhoneMouse
             var btnKeyCode = InputHelper.GetMouseButton(mButton, press);
             InputHelper.PressMouseKey(btnKeyCode);
 
-            await Clients.Caller.SendAsync("CommandReceived", $"MBTN Released.");
-
             await Clients.Caller.SendAsync("CommandReceived", $"MBTN Pressed.");
         }
 
@@ -184,23 +196,9 @@ namespace PhoneMouse
             Console.WriteLine($"Key released: {key}");
 
             // Simulate the key release (key up)
-            //SimulateKeyUp(key);
+            // SimulateKeyUp(key);
 
             await Clients.Caller.SendAsync("CommandReceived", $"Key '{key}' released.");
-        }
-
-        // Method to simulate key press (key down)
-        private void SimulateKeyDown(object key)
-        {
-            InputHelper.PressKey(key);
-            Console.WriteLine($"key Pressed {key}");
-        }
-
-        // Method to simulate key release (key up)
-        private void SimulateKeyUp(object key)
-        {
-            InputHelper.ReleaseKey(key);
-            Console.WriteLine($"key Released {key}");
         }
     }
 }
