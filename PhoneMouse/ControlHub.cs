@@ -133,7 +133,7 @@ namespace PhoneMouse
         public async Task SendKey(string key) 
         {
             Console.WriteLine($"Key sent: {key}");
-            bool isUppercase = ((key == key.ToUpper() && !Regex.IsMatch(key, @"[^a-zA-Z0-9]") && !(key == "ENTER" || key == "BACK")) ||
+            bool isUppercase = ((key == key.ToUpper() && !Regex.IsMatch(key, @"[^a-zA-Z]") && !(key == "ENTER" || key == "BACK")) ||
                 key == "(" ||
                 key == ")" ||
                 key == "@" ||
