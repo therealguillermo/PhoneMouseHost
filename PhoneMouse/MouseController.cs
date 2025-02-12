@@ -58,7 +58,7 @@ namespace PhoneMouse
 
         private CGPoint GetCurrentMousePoint()
         {
-            // Create a point to store the current mouse position
+            //Create a point to store the current mouse position
             IntPtr mouseEvent = CGEventCreate(IntPtr.Zero);
             CGPoint currentPoint = CGEventGetLocation(mouseEvent);
             //CGPoint currentPoint = NSEvent_mouseLocation();

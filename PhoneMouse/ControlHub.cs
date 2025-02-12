@@ -130,6 +130,7 @@ namespace PhoneMouse
 
             bool press = true;
             var btnKeyCode = InputHelper.GetMouseButton(mButton, press);
+            
             InputHelper.PressMouseKey(btnKeyCode);
 
             await Clients.Caller.SendAsync("CommandReceived", $"MBTN Pressed.");
@@ -153,6 +154,7 @@ namespace PhoneMouse
         public async Task SendKey(string key) 
         {
             Console.WriteLine($"Key sent: {key}");
+
             bool isUppercase = ((key == key.ToUpper() && !Regex.IsMatch(key, @"[^a-zA-Z0-9]") && !(key == "ENTER" || key == "BACK")) ||
                 key == "(" ||
                 key == ")" ||
@@ -174,21 +176,24 @@ namespace PhoneMouse
                 key == "~" ||
                 key == "?" ||
                 key == "!");
+
             var keyCode = InputHelper.GetKeysKey(key);
 
-            Console.WriteLine($"{isUppercase}", key);
+            Console.WriteLine($"{isUppercase}, {key}");
 
             if (isUppercase)
             {
                 // Simulate pressing Shift key if the character is uppercase
                 this.SimulateKeyDown(InputHelper._ShiftKey);
+                System.Threading.Thread.Sleep(10); // add time for mac to register
             }
 
             this.SimulateKeyDown(keyCode);
             this.SimulateKeyUp(keyCode);
-                        if (isUppercase)
+            if (isUppercase)
             {
                 // Simulate pressing Shift key if the character is uppercase
+                //System.Threading.Thread.Sleep(1000);
                 this.SimulateKeyUp(InputHelper._ShiftKey);
             }
             Console.WriteLine($"Keypressed {key}");
