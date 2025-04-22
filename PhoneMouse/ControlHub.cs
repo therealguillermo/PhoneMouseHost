@@ -38,6 +38,12 @@ namespace PhoneMouse
             // Handle the command, e.g., volume up, open app, etc.
             await Clients.Caller.SendAsync("CommandReceived", $"Command '{command}' executed.");
         }
+
+        public async Task ScrollAction(string direction) {
+            InputHelper.ScrollAction(direction);
+            await Clients.Caller.SendAsync("CommandReceived", $"Scrolling '{direction}' executed.");
+        }
+
         public async Task MoveMouse(double deltaX, double deltaY)
         {
             Console.WriteLine($"Move mouse: DeltaX={deltaX}, DeltaY={deltaY}");
@@ -55,7 +61,7 @@ namespace PhoneMouse
         {
             //var currentPos = Cursor.Position;
             var currentPos = this._mouseController.GetSavedMouseState();
-            Console.WriteLine($"currentPos (should not change b4 state end) : {currentPos}");
+            //Console.WriteLine($"currentPos (should not change b4 state end) : {currentPos}");
             Cursor.Position = new Point(currentPos.X + deltaX, currentPos.Y + deltaY);
         }
 

@@ -60,7 +60,7 @@ namespace PhoneMouseTrayApp
 
             NotifyIcon trayIcon = new NotifyIcon
             {
-                Icon = new System.Drawing.Icon("icons/PhoneMouseHost.ico"), // Ensure you have the icon
+                Icon = new System.Drawing.Icon("icons/phonemouse.ico"), // Ensure you have the icon
                 Text = "PhoneMouse Host",
                 Visible = true
             };

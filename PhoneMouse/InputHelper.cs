@@ -143,8 +143,15 @@ namespace PhoneMouse
         [DllImport("User32.dll")]
         private static extern bool SetCursorPos(int x, int y);
         #endregion
+        const uint WHEEL_DELTA = 120;
 
         #region Wrapper Methods
+        public static void ScrollAction(string scrollDirection) {
+            int scrollAmount = scrollDirection.ToLower() == "up" ? (int)WHEEL_DELTA : -(int)WHEEL_DELTA;
+
+            mouse_event((uint)MouseEventF.Wheel, 0, 0, (uint)scrollAmount, 0);
+        }
+
         public static POINT GetCursorPosition()
         {
             GetCursorPos(out POINT point);
