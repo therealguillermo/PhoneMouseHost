@@ -6,32 +6,11 @@ namespace PhoneMouse
 {
     public class ControlHub : Hub
     {
-#if WINDOWS
-        // Moves the cursor to position based off of initial mousepos start
-        private void MoveMousePointer(int deltaX, int deltaY)
-        {
-            //var currentPos = Cursor.Position;
-            var currentPos = this._mouseController.GetSavedMouseState();
-            Console.WriteLine($"currentPos (should not change b4 state end) : {currentPos}");
-            Cursor.Position = new Point(currentPos.X + deltaX, currentPos.Y + deltaY);
+        public async Task ScrollAction(string direction) {
+            InputHelper.ScrollAction(direction);
+            await Clients.Caller.SendAsync("CommandReceived", $"Scrolling '{direction}' executed.");
         }
 
-        // Method to simulate key press (key down)
-        private void SimulateKeyDown(Keys key)
-        {
-            InputHelper.PressKey(key);
-            Console.WriteLine($"key Pressed {key}");
-        }
-
-        // Method to simulate key release (key up)
-        private void SimulateKeyUp(Keys key)
-        {
-            InputHelper.ReleaseKey(key);
-            Console.WriteLine($"key Released {key}");
-        }
-#endif
-
-#if !WINDOWS
         private void MoveMousePointer(int deltaX, int deltaY)
         {
             var currentPos = this._mouseController.GetSavedMouseState();
@@ -51,7 +30,6 @@ namespace PhoneMouse
             InputHelper.ReleaseKey(key);
             Console.WriteLine($"key Released {key}");
         }
-#endif
 
         private readonly MouseController _mouseController;
 
