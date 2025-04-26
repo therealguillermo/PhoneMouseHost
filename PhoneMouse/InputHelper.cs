@@ -11,7 +11,7 @@ namespace PhoneMouse
 {
     public class InputHelper
     {
-#if !WINDOWS
+
 
         [StructLayout(LayoutKind.Sequential)]
         public struct CGPoint
@@ -413,6 +413,6 @@ namespace PhoneMouse
             CGPoint currentPoint = CGEventGetLocation(mouseEvent);
             return currentPoint;
         }
-#endif
+
     }
 }
