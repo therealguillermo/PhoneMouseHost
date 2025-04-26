@@ -12,7 +12,6 @@ namespace PhoneMouse
     public class InputHelper
     {
 
-
         [StructLayout(LayoutKind.Sequential)]
         public struct CGPoint
         {
@@ -198,7 +197,7 @@ namespace PhoneMouse
         public static void ScrollAction(string scrollDirection)
         {
             // Determine scroll amount: Positive = up, Negative = down
-            int scrollAmount = scrollDirection.ToLower() == "up" ? 20 : -20;
+            int scrollAmount = scrollDirection.ToLower() == "up" ? 30 : -30;
 
             // 0 for vertical axis scrolling
             IntPtr scrollEvent = CGEventCreateScrollWheelEvent(0, 0, 1, scrollAmount);
@@ -334,7 +333,6 @@ namespace PhoneMouse
                 case ",": return MacVirtualKeyCodes.kVK_ANSI_Comma;     // Comma
                 case "?": return MacVirtualKeyCodes.kVK_ANSI_Slash;  // Question mark (Shift + /)
                 
-
                 // Arrow keys
                 case "↑": return MacVirtualKeyCodes.kVK_UpArrow;
                 case "↓": return MacVirtualKeyCodes.kVK_DownArrow;
