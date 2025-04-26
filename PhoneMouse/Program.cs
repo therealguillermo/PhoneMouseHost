@@ -16,85 +16,11 @@ namespace PhoneMouseTrayApp
 {
     class Program
     {
-
-#if WINDOWS
-        // Import necessary Windows API functions to manipulate the console window
-        [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern IntPtr GetConsoleWindow();
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        const int SW_HIDE = 0;
-        const int SW_SHOW = 5;
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        public static extern bool AllocConsole();
-
-        [DllImport("kernel32.dll")]
-        public static extern bool FreeConsole();
-
-                private static void RunTrayApplication()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            NotifyIcon trayIcon = new NotifyIcon
-            {
-                Icon = new System.Drawing.Icon("icons/PhoneMouseHost.ico"), // Ensure you have the icon
-                Text = "PhoneMouse Host",
-                Visible = true
-            };
-
-            // Create the tray menu
-            ContextMenuStrip trayMenu = new ContextMenuStrip();
-            trayMenu.Items.Add("Open", null, (sender, e) => OpenApp());
-            trayMenu.Items.Add("Exit", null, (sender, e) => ExitApp(trayIcon));
-
-            // Attach the menu to the tray icon
-            trayIcon.ContextMenuStrip = trayMenu;
-
-            // Run the tray application loop
-            Application.Run();
-        }
-
-        private static void OpenApp()
-        {
-            MessageBox.Show($"PhoneMouse Server Running\n\nHosted on local network at:\n{NetworkHelper.GetLocalIPAddress()}\n", "Info");
-
-        }
-
-        private static void ExitApp(NotifyIcon trayIcon)
-        {
-            trayIcon.Visible = false;
-            trayIcon.Dispose();
-            Application.Exit();
-        }
-
-
-
-        [STAThread] // Marking the Main method for STAThread (required for NotifyIcon)
-#endif
         static void Main(string[] args)
         {
 
             bool showConsole = true;
-#if WINDOWS
-            // Hide the console window if running as a Windows application
-            if (Environment.UserInteractive && !showConsole) // Checks if running interactively (console mode)
-            {
-                // Set the console window to invisible
-                var handle = GetConsoleWindow();
-                ShowWindow(handle, SW_HIDE);
-                FreeConsole();
-            }
 
-            Task.Run(() => RunWebServer(args));
-            RunTrayApplication();
-#endif
-
-#if !WINDOWS
             // Run the web server (ASP.NET Core)
             Console.WriteLine($"starting server on {NetworkHelper.GetLocalIPAddress()}");
             
@@ -102,8 +28,7 @@ namespace PhoneMouseTrayApp
             serverTask.Wait();
 
             Console.WriteLine($"end");
-            // Run the tray application (Windows Forms)
-#endif
+
         }
 
         private static void RunWebServer(string[] args)
