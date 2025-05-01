@@ -40,5 +40,13 @@
     <string>PhoneMouse needs input monitoring to control your mouse and keyboard.</string>
     <key>NSInputMonitoringUsage</key>
     <true/>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>PhoneMouse needs to control your mouse and keyboard.</string>
+    <key>NSAppleEventsUsage</key>
+    <true/>
+    <key>NSAccessibilityUsageDescription</key>
+    <string>PhoneMouse needs accessibility permissions to control your mouse and keyboard.</string>
+    <key>NSAccessibilityUsage</key>
+    <true/>
 </dict>
 </plist> 
