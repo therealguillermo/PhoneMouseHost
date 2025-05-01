@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>PhoneMouse</string>
+    <key>CFBundleDisplayName</key>
+    <string>PhoneMouse</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.phonemouse.app</string>
+    <key>CFBundleVersion</key>
+    <string>1.0.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleExecutable</key>
+    <string>PhoneMouse</string>
+    <key>CFBundleIconFile</key>
+    <string>appicon.icns</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.15</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSRequiresAquaSystemAppearance</key>
+    <false/>
+    <key>LSUIElement</key>
+    <true/>
+    <key>LSBackgroundOnly</key>
+    <false/>
+    <key>NSAppleScriptEnabled</key>
+    <true/>
+    <key>NSUIElement</key>
+    <true/>
+    <key>NSAccessibilityEnabled</key>
+    <true/>
+    <key>NSAccessibilityAssistiveDeviceEnabled</key>
+    <true/>
+    <key>NSInputMonitoringUsageDescription</key>
+    <string>PhoneMouse needs input monitoring to control your mouse and keyboard.</string>
+    <key>NSInputMonitoringUsage</key>
+    <true/>
+</dict>
+</plist> 

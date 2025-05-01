@@ -1,45 +1,63 @@
-
-#if WINDOWS
-using System.Windows.Forms;
-#endif
-
 using System;
-using System.Drawing;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PhoneMouse;
-using System.Runtime.InteropServices;
+using Eto.Forms;
+using Eto.Drawing;
 
 namespace PhoneMouseTrayApp
 {
     class Program
     {
+        private static string? localIP;
+        private static Application? app;
+        private static TrayIndicator? tray;
+
         static void Main(string[] args)
         {
-
-            bool showConsole = true;
-
-            // Run the web server (ASP.NET Core)
-            Console.WriteLine($"starting server on {NetworkHelper.GetLocalIPAddress()}");
+            localIP = NetworkHelper.GetLocalIPAddress();
             
+            // Initialize Eto.Forms application
+            app = new Application(Eto.Platform.Detect);
+            
+            // Configure application to not show in Dock
+            if (Eto.Platform.Detect.IsMac)
+            {
+                app.Style = "application";
+            }
+            
+            // Create tray indicator
+            tray = new TrayIndicator
+            {
+                Title = "PhoneMouse",
+                Image = new Bitmap(16, 16, PixelFormat.Format32bppRgba)
+            };
+
+            // Create menu
+            var menu = new ContextMenu();
+            menu.Items.Add(new ButtonMenuItem { Text = $"IP: {localIP}", Enabled = false });
+            menu.Items.Add(new SeparatorMenuItem());
+            menu.Items.Add(new ButtonMenuItem { Text = "Quit", Command = new Command((s, e) => {
+                tray.Visible = false;
+                app.Quit();
+            })});
+
+            tray.Menu = menu;
+            tray.Visible = true;
+
+            // Start the web server
             var serverTask = Task.Run(() => RunWebServer(args));
-            serverTask.Wait();
-
-            Console.WriteLine($"end");
-
+            
+            // Run the application
+            app.Run();
         }
 
         private static void RunWebServer(string[] args)
         {
-            var localIP = NetworkHelper.GetLocalIPAddress();
-
-            // Create builder and setup App
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services
-            //builder.Services.AddRazorPages();
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("CorsName", policy =>
@@ -54,11 +72,10 @@ namespace PhoneMouseTrayApp
             builder.Services.AddSignalR();
             builder.Services.AddControllers();
 
-
             var app = builder.Build();
 
             app.UseCors("CorsName");
-            // Configure request pipeline
+            
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
@@ -67,22 +84,14 @@ namespace PhoneMouseTrayApp
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
-            // Map SignalR hub
-            //app.MapRazorPages();
             app.MapHub<ControlHub>("/controlHub");
 
-            // Restrict to local network
-            app.Urls.Add("http://0.0.0.0:5123"); // Listen on all local interfaces
+            app.Urls.Add("http://0.0.0.0:5123");
             app.Urls.Add("http://localhost:5123");
-            app.Urls.Add($"http://{localIP}:5123"); // Replace <localIP> with the PC's local network IP.
+            app.Urls.Add($"http://{localIP}:5123");
 
-
-            Console.WriteLine("Prgm started!");
             app.Run();
         }
     }

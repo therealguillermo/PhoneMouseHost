@@ -209,13 +209,184 @@ namespace PhoneMouse
             CFRelease(scrollEvent);
         }
 
-        public static void GetCursorPosition() {}
+        public static CGPoint GetCursorPosition()
+        {
+            return GetCurrentMousePoint();
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct CGRect
+        {
+            public double X;
+            public double Y;
+            public double Width;
+            public double Height;
+
+            public CGRect(double x, double y, double width, double height)
+            {
+                X = x;
+                Y = y;
+                Width = width;
+                Height = height;
+            }
+        }
+
+        [DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+        private static extern CGRect CGDisplayBounds(uint displayID);
+
+        [DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+        private static extern uint CGMainDisplayID();
+
+        [DllImport("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")]
+        private static extern uint CGGetActiveDisplayList(uint maxDisplays, IntPtr activeDisplays, out uint displayCount);
+
+        public static CGRect GetDisplayBounds()
+        {
+            // Get the number of active displays
+            uint displayCount = 0;
+            CGGetActiveDisplayList(0, IntPtr.Zero, out displayCount);
+
+            if (displayCount == 0)
+                return new CGRect(0, 0, 0, 0);
+
+            // Allocate memory for display IDs
+            IntPtr displayIDs = Marshal.AllocHGlobal((int)displayCount * sizeof(uint));
+            try
+            {
+                // Get the active display IDs
+                CGGetActiveDisplayList(displayCount, displayIDs, out displayCount);
+
+                // Calculate the total bounds that encompass all displays
+                double minX = double.MaxValue;
+                double minY = double.MaxValue;
+                double maxX = double.MinValue;
+                double maxY = double.MinValue;
+
+                for (int i = 0; i < displayCount; i++)
+                {
+                    uint displayID = (uint)Marshal.ReadInt32(displayIDs, i * sizeof(uint));
+                    CGRect bounds = CGDisplayBounds(displayID);
+                    
+                    minX = Math.Min(minX, bounds.X);
+                    minY = Math.Min(minY, bounds.Y);
+                    maxX = Math.Max(maxX, bounds.X + bounds.Width);
+                    maxY = Math.Max(maxY, bounds.Y + bounds.Height);
+                }
+
+                return new CGRect(minX, minY, maxX - minX, maxY - minY);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(displayIDs);
+            }
+        }
+
+        public static CGRect GetMainDisplayBounds()
+        {
+            uint mainDisplayId = CGMainDisplayID();
+            return CGDisplayBounds(mainDisplayId);
+        }
+
+        public static CGRect GetDisplayBoundsForPoint(CGPoint point)
+        {
+            uint displayCount = 0;
+            CGGetActiveDisplayList(0, IntPtr.Zero, out displayCount);
+
+            if (displayCount == 0)
+                return new CGRect(0, 0, 0, 0);
+
+            IntPtr displayIDs = Marshal.AllocHGlobal((int)displayCount * sizeof(uint));
+            try
+            {
+                CGGetActiveDisplayList(displayCount, displayIDs, out displayCount);
+
+                CGRect? bestMatch = null;
+                double bestDistance = double.MaxValue;
+
+                for (int i = 0; i < displayCount; i++)
+                {
+                    uint displayID = (uint)Marshal.ReadInt32(displayIDs, i * sizeof(uint));
+                    CGRect bounds = CGDisplayBounds(displayID);
+                    
+                    bool isInDisplay = point.X >= bounds.X && 
+                                     point.X <= bounds.X + bounds.Width &&
+                                     point.Y >= bounds.Y && 
+                                     point.Y <= bounds.Y + bounds.Height;
+                    
+                    if (isInDisplay)
+                    {
+                        double centerX = bounds.X + bounds.Width / 2;
+                        double centerY = bounds.Y + bounds.Height / 2;
+                        double distance = Math.Sqrt(Math.Pow(point.X - centerX, 2) + Math.Pow(point.Y - centerY, 2));
+                        
+                        if (distance < bestDistance)
+                        {
+                            bestDistance = distance;
+                            bestMatch = bounds;
+                        }
+                    }
+                }
+
+                if (bestMatch.HasValue)
+                    return bestMatch.Value;
+
+                bestMatch = null;
+                bestDistance = double.MaxValue;
+
+                for (int i = 0; i < displayCount; i++)
+                {
+                    uint displayID = (uint)Marshal.ReadInt32(displayIDs, i * sizeof(uint));
+                    CGRect bounds = CGDisplayBounds(displayID);
+                    
+                    double distanceX = Math.Max(0, Math.Max(bounds.X - point.X, point.X - (bounds.X + bounds.Width)));
+                    double distanceY = Math.Max(0, Math.Max(bounds.Y - point.Y, point.Y - (bounds.Y + bounds.Height)));
+                    double distance = Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
+                    
+                    if (distance < bestDistance)
+                    {
+                        bestDistance = distance;
+                        bestMatch = bounds;
+                    }
+                }
+
+                if (bestMatch.HasValue)
+                    return bestMatch.Value;
+
+                return GetMainDisplayBounds();
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(displayIDs);
+            }
+        }
 
         public static void SetCursorPosition(double x, double y)
         {
-            CGPoint newPosition = new CGPoint(x, y);
-            IntPtr mouseEvent = CGEventCreateMouseEvent(IntPtr.Zero, (int)CGEventType.MouseMoved, newPosition,(int)CGMouseButton.Left);
+            var mainBounds = GetMainDisplayBounds();
+            var totalBounds = GetDisplayBounds();
+            
+            var currentPos = GetCurrentMousePoint();
+            var currentDisplayBounds = GetDisplayBoundsForPoint(currentPos);
+            
+            var targetPoint = new CGPoint(x, y);
+            var targetDisplayBounds = GetDisplayBoundsForPoint(targetPoint);
+            
+            if (currentDisplayBounds.X != targetDisplayBounds.X || 
+                currentDisplayBounds.Y != targetDisplayBounds.Y)
+            {
+                x = Math.Max(targetDisplayBounds.X, Math.Min(x, targetDisplayBounds.X + targetDisplayBounds.Width - 1));
+                y = Math.Max(targetDisplayBounds.Y, Math.Min(y, targetDisplayBounds.Y + targetDisplayBounds.Height - 1));
+            }
+            else
+            {
+                x = Math.Max(currentDisplayBounds.X, Math.Min(x, currentDisplayBounds.X + currentDisplayBounds.Width - 1));
+                y = Math.Max(currentDisplayBounds.Y, Math.Min(y, currentDisplayBounds.Y + currentDisplayBounds.Height - 1));
+            }
+            
+            var point = new CGPoint(x, y);
+            IntPtr mouseEvent = CGEventCreateMouseEvent(IntPtr.Zero, (int)CGEventType.MouseMoved, point, (int)CGMouseButton.Left);
             CGEventPost((nint)CGEventTapLocation.HID, mouseEvent);
+            CFRelease(mouseEvent);
         }
 
         public static MacVirtualKeyCodes GetKeysKey(string key)
