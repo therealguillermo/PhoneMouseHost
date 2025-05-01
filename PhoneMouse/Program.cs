@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using PhoneMouse;
 using Eto.Forms;
 using Eto.Drawing;
+using System.IO;
 
 namespace PhoneMouseTrayApp
 {
@@ -32,7 +33,7 @@ namespace PhoneMouseTrayApp
             tray = new TrayIndicator
             {
                 Title = "PhoneMouse",
-                Image = new Bitmap(16, 16, PixelFormat.Format32bppRgba)
+                Image = new Bitmap(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icons", "trayicon.png"))
             };
 
             // Create menu
