@@ -11,3 +11,5 @@ PhoneMouse.app/
 *.swp
 *.swo
 *.log
+.vscode/
+create-icon.sh

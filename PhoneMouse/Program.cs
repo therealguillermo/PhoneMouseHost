@@ -15,6 +15,7 @@ namespace PhoneMouseTrayApp
         private static string? localIP;
         private static Application? app;
         private static TrayIndicator? tray;
+        private static BroadcastService? broadcastService;
 
         static void Main(string[] args)
         {
@@ -41,12 +42,17 @@ namespace PhoneMouseTrayApp
             menu.Items.Add(new ButtonMenuItem { Text = $"IP: {localIP}", Enabled = false });
             menu.Items.Add(new SeparatorMenuItem());
             menu.Items.Add(new ButtonMenuItem { Text = "Quit", Command = new Command((s, e) => {
+                broadcastService?.Dispose();
                 tray.Visible = false;
                 app.Quit();
             })});
 
             tray.Menu = menu;
             tray.Visible = true;
+
+            // Start the broadcast service
+            broadcastService = new BroadcastService();
+            broadcastService.Start();
 
             // Start the web server
             var serverTask = Task.Run(() => RunWebServer(args));
