@@ -5,28 +5,6 @@ namespace PhoneMouse
 {
     public class MouseController
     {
-#if WINDOWS
-        //private Point savedMousePos = new Point(Cursor.Position.X, Cursor.Position.Y); 
-        private Point savedMousePos = new Point(Cursor.Position.X, Cursor.Position.Y);
-        public void SaveMouseState()
-        {
-            var currentPos = this.GetCurrentMousePoint();
-            this.savedMousePos = new Point(currentPos.X, currentPos.Y);
-            Console.WriteLine("SavedMouseState");
-        }
-
-        private Point GetCurrentMousePoint()
-        {
-            return new Point(Cursor.Position.X, Cursor.Position.Y);
-        }
-
-        public Point GetSavedMouseState()
-        {
-            return this.savedMousePos;
-        }
-#endif
-
-#if !WINDOWS
 
         [StructLayout(LayoutKind.Sequential)]
         public struct CGPoint
@@ -70,7 +48,5 @@ namespace PhoneMouse
         {
             return this.savedMousePos;
         }
-#endif
-
     }
 }

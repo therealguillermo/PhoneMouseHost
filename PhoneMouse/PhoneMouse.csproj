@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<OutputType>Exe</OutputType>
-		<RuntimeIdentifiers>osx-x64</RuntimeIdentifiers>
+		<RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
 		<UseAppHost>true</UseAppHost>
 		<SelfContained>true</SelfContained>
 		<PublishSingleFile>true</PublishSingleFile>

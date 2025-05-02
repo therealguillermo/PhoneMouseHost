@@ -1,3 +1,13 @@
 .vs/
 PhoneMouse/obj/
 PhoneMouse/bin/
+PhoneMouse.app/
+*.dmg
+*.user
+*.userosscache
+*.suo
+*.userprefs
+.DS_Store
+*.swp
+*.swo
+*.log

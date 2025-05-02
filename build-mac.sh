@@ -23,8 +23,7 @@ dotnet publish PhoneMouse/PhoneMouse.csproj \
     -r osx-x64 \
     --self-contained true \
     -p:PublishSingleFile=true \
-    -p:IncludeNativeLibrariesForSelfExtract=true \
-    -p:ApplicationIcon=
+    -p:IncludeNativeLibrariesForSelfExtract=true
 
 # Create app bundle structure
 echo "Creating app bundle..."
@@ -34,8 +33,10 @@ mkdir -p "$APP_BUNDLE/Contents/Resources"
 # Copy binary
 cp "PhoneMouse/bin/Release/$FRAMEWORK/osx-x64/publish/PhoneMouse" "$APP_BUNDLE/Contents/MacOS/"
 
-# Copy icon
+# Copy icons
 cp "PhoneMouse/icons/appicon.icns" "$APP_BUNDLE/Contents/Resources/"
+mkdir -p "$APP_BUNDLE/Contents/MacOS/icons"
+cp "PhoneMouse/icons/trayicon.png" "$APP_BUNDLE/Contents/MacOS/icons/"
 
 # Create Info.plist
 cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
@@ -71,6 +72,28 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
     <true/>
     <key>NSRequiresAquaSystemAppearance</key>
     <false/>
+    <key>NSAccessibilityEnabled</key>
+    <true/>
+    <key>NSAccessibilityAssistiveDeviceEnabled</key>
+    <true/>
+    <key>NSInputMonitoringUsageDescription</key>
+    <string>PhoneMouse needs input monitoring to control your mouse and keyboard.</string>
+    <key>NSInputMonitoringUsage</key>
+    <true/>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>PhoneMouse needs to control your mouse and keyboard.</string>
+    <key>NSAppleEventsUsage</key>
+    <true/>
+    <key>NSAccessibilityUsageDescription</key>
+    <string>PhoneMouse needs accessibility permissions to control your mouse and keyboard.</string>
+    <key>NSAccessibilityUsage</key>
+    <true/>
+    <key>NSAccessibilityRequestPermission</key>
+    <true/>
+    <key>NSAccessibilityRequestPermissionDescription</key>
+    <string>PhoneMouse needs accessibility permissions to control your mouse and keyboard. Please grant these permissions in System Settings.</string>
+    <key>NSAccessibilityRequestPermissionTimeout</key>
+    <integer>30</integer>
 </dict>
 </plist>
 EOF
