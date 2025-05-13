@@ -1,4 +1,3 @@
-
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -31,13 +30,12 @@ namespace PhoneMouseTrayApp
         [DllImport("kernel32.dll")]
         public static extern bool FreeConsole();
 
-
+        private static BroadcastService? _broadcastService;
 
         [STAThread] // Marking the Main method for STAThread (required for NotifyIcon)
         static void Main(string[] args)
         {
-
-            bool showConsole = true;
+            bool showConsole = false;
             // Hide the console window if running as a Windows application
             if (Environment.UserInteractive && !showConsole) // Checks if running interactively (console mode)
             {
@@ -46,6 +44,11 @@ namespace PhoneMouseTrayApp
                 ShowWindow(handle, SW_HIDE);
                 FreeConsole();
             }
+
+            // Initialize and start the broadcast service
+            _broadcastService = new BroadcastService();
+            _broadcastService.Start();
+
             // Run the web server (ASP.NET Core)
             Task.Run(() => RunWebServer(args));
 
@@ -79,12 +82,19 @@ namespace PhoneMouseTrayApp
 
         private static void OpenApp()
         {
-            MessageBox.Show($"PhoneMouse Server Running\n\nHosted on local network at:\n{NetworkHelper.GetLocalIPAddress()}\n", "Info");
+            MessageBox.Show($"PhoneMouse Host Running\n\nIP: {NetworkHelper.GetLocalIPAddress()}\n", "Info");
 
         }
 
         private static void ExitApp(NotifyIcon trayIcon)
         {
+            // Dispose of the broadcast service
+            if (_broadcastService != null)
+            {
+                _broadcastService.Stop();
+                _broadcastService.Dispose();
+            }
+
             trayIcon.Visible = false;
             trayIcon.Dispose();
             Application.Exit();

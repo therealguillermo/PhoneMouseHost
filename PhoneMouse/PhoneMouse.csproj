@@ -18,13 +18,19 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<OutputType>Exe</OutputType>
+		<PackageIcon>phonemouse.png</PackageIcon>
+		<ApplicationIcon>icons\phonemouse.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- Include any required packages -->
-		<!--PackageReference Include="Microsoft.AspNetCore.SignalR" Version="7.0.4" /> -->
-		<!--PackageReference Include="WindowsInput" Version="7.0.4" /> -->
-		<!-- Optional for advanced input simulation -->
+	  <Content Include="icons\phonemouse.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="icons\phonemouse.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>

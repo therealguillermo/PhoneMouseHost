@@ -381,17 +381,5 @@ namespace PhoneMouse
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern short GetAsyncKeyState(int vKey);
 #endif
-
-#if OSX
-        using System.Runtime.InteropServices;
-
-        public static void GetCursorPosition()
-        public static void SetCursorPosition(int x, int y)
-        public static void GetKeysKey(string key)
-        public static void PressMouseKey(key=RightDown)
-        public static void PressKey(keyCode key)
-        public static void ReleaseKey(keyCode key)
-
-#endif
     }
 }
