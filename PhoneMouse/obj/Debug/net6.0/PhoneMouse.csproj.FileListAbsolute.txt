@@ -1,8 +1,0 @@
-C:\Users\Mike\ProgramingProjects\phoneMouse\PhoneMouse\PhoneMouse\obj\Debug\net6.0\PhoneMouse.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Mike\ProgramingProjects\phoneMouse\PhoneMouse\PhoneMouse\obj\Debug\net6.0\PhoneMouse.AssemblyInfoInputs.cache
-C:\Users\Mike\ProgramingProjects\phoneMouse\PhoneMouse\PhoneMouse\obj\Debug\net6.0\PhoneMouse.AssemblyInfo.cs
-C:\Users\Mike\ProgramingProjects\phoneMouse\PhoneMouse\PhoneMouse\obj\Debug\net6.0\PhoneMouse.csproj.CoreCompileInputs.cache
-C:\Users\Mike\ProgramingProjects\phoneMouse\PhoneMouse\PhoneMouse\obj\Debug\net6.0\PhoneMouse.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\Mike\ProgramingProjects\phoneMouse\PhoneMouse\PhoneMouse\obj\Debug\net6.0\PhoneMouse.RazorAssemblyInfo.cache
-C:\Users\Mike\ProgramingProjects\phoneMouse\PhoneMouse\PhoneMouse\obj\Debug\net6.0\PhoneMouse.RazorAssemblyInfo.cs
-C:\Users\Mike\ProgramingProjects\phoneMouse\PhoneMouse\PhoneMouse\obj\Debug\net6.0\PhoneMouse.csproj.AssemblyReference.cache
